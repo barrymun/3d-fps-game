@@ -1,4 +1,8 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import manModel from './assets/man.gltf';
+
+const loader = new GLTFLoader();
 
 function main() {
     const canvas = document.querySelector('#c') as HTMLCanvasElement;
@@ -17,6 +21,18 @@ function main() {
     const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
+
+    loader.load(
+        // './assets/man.gltf',
+        manModel,
+        function (gltf) {
+            scene.add(gltf.scene);
+        },
+        undefined,
+        function (error) {
+            console.error(error);
+        }
+    );
 
     function render(time: number) {
         time *= 0.001; // convert time to seconds

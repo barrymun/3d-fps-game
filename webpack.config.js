@@ -14,6 +14,20 @@ module.exports = (env, argv) => {
                     use: 'ts-loader',
                     exclude: /node_modules/,
                 },
+                {
+                    test: /\.(gltf)$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[path][name].[ext]',
+                                outputPath: 'assets/',
+                                publicPath: 'assets/',
+                                context: 'src/',
+                            },
+                        },
+                    ],
+                },
             ],
         },
         resolve: {
@@ -26,10 +40,8 @@ module.exports = (env, argv) => {
         devtool: 'source-map',
         plugins: [
             new CopyPlugin({
-                patterns: [
-                    { from: 'src/index.html', to: 'index.html' },
-                ],
+                patterns: [{ from: 'src/index.html', to: 'index.html' }],
             }),
         ],
-    }
+    };
 };
