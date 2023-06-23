@@ -1655,7 +1655,7 @@
     ],
     "images": [
         {
-            "uri": "CesiumMan_img0.jpg"
+            "uri": "man.jpg"
         }
     ],
     "samplers": [
@@ -1717,7 +1717,7 @@
     ],
     "buffers": [
         {
-            "uri": "CesiumMan_data.bin",
+            "uri": "man.bin",
             "byteLength": 252664
         }
     ]

@@ -20,13 +20,37 @@ module.exports = (env, argv) => {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[path][name].[ext]',
+                                name: '[name].[ext]',
                                 outputPath: 'assets/',
                                 publicPath: 'assets/',
                                 context: 'src/',
                             },
                         },
                     ],
+                },
+                {
+                    test: /\.bin$/,
+                    use: {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'assets/',
+                            publicPath: 'assets/',
+                            context: 'src/',
+                        },
+                    },
+                },
+                {
+                    test: /\.jpg$/,
+                    use: {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'assets/',
+                            publicPath: 'assets/',
+                            context: 'src/',
+                        },
+                    },
                 },
             ],
         },
