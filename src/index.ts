@@ -96,14 +96,6 @@ function main() {
         canvas,
         alpha: true,
     });
-    // renderer.setClearColor(0xabcdef); // Replace with any hex color.
-
-    const fov = 75;
-    const aspect = 2; // the canvas default
-    const near = 0.1;
-    const far = 1000;
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 2;
 
     const scene = new THREE.Scene();
     const texture = cubeTextureLoader.load([
@@ -115,6 +107,30 @@ function main() {
         nz, // front
     ]);
     scene.background = texture;
+
+    const fov = 75;
+    const aspect = 2; // the canvas default
+    const near = 0.1;
+    const far = 1000;
+    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.z = 2;
+    // make sure to add the camera to the scene or the weapon won't be visible.
+    scene.add(camera);
+
+    // Create a box geometry for the weapon.
+    const weaponGeometry = new THREE.BoxGeometry(2, 2, 1);
+
+    // Create a basic material for the weapon and set its color to red.
+    const weaponMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+    // Create a mesh for the weapon and add it to the camera.
+    const weapon = new THREE.Mesh(weaponGeometry, weaponMaterial);
+
+    // Position the weapon in front of the camera.
+    weapon.position.set(2, -1, -2);
+
+    // Add the weapon to the camera.
+    camera.add(weapon);
 
     // Create a material for the ground. We'll use a basic material and set its color to white.
     const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
@@ -161,6 +177,7 @@ function main() {
         camera.position.set(x, y, z);
         // Make the camera point towards the object.
         camera.lookAt(objectPos);
+        // weapon.position.set(x, y, z-100);
 
         // The speed at which the ground moves (but it looks like the camera is moving)
         let moveSpeed = 2;
