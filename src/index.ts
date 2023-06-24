@@ -104,7 +104,7 @@ function main() {
     });
     // https://discourse.threejs.org/t/render-looks-blurry-and-pixelated-even-with-antialias-true-why/12381
     renderer.setPixelRatio(window.devicePixelRatio);
-    // renderer.setSize( 1920, 1080 );
+    // renderer.setSize(1920, 1080);
 
     const scene = new THREE.Scene();
     const texture = cubeTextureLoader.load([
@@ -117,6 +117,7 @@ function main() {
     ]);
     scene.background = texture;
 
+    // useful lighting ref: https://stackoverflow.com/a/55937162
     const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
     scene.add(ambientLight);
 
@@ -144,6 +145,10 @@ function main() {
             asset: any;
         }) {
             const object = gltf.scene;
+
+            object.traverse((c) => {
+                c.castShadow = true;
+            });
 
             object.scale.set(10, 10, 10);
 
