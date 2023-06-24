@@ -1,8 +1,6 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import manGltf from './assets/man.gltf';
-import manBin from './assets/man.bin';
-import manJpg from './assets/man.jpg';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
 import nx from './assets/nx.jpg';
 import ny from './assets/ny.jpg';
 import nz from './assets/nz.jpg';
@@ -10,14 +8,17 @@ import px from './assets/px.jpg';
 import py from './assets/py.jpg';
 import pz from './assets/pz.jpg';
 
-const gltfLoader = new GLTFLoader();
-const fileLoader = new THREE.FileLoader();
-const imageLoader = new THREE.ImageLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
-
-const speed: number = 0.01;
-
-let model: THREE.Group | undefined;
+const keys = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    w: false,
+    s: false,
+    a: false,
+    d: false,
+};
 
 // Initialize the camera's spherical coordinates.
 let radius = 10; // The distance from the object.
@@ -32,30 +33,31 @@ let objectPos = new THREE.Vector3(0, 0, 0);
 // The speed at which the camera rotates in degrees (adjust as needed).
 let rotationSpeed = 1;
 
-const keys = {
-    up: false,
-    down: false,
-    left: false,
-    right: false,
-};
-
 window.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowUp':
-        case 'w':
             keys.up = true;
             break;
         case 'ArrowDown':
-        case 's':
             keys.down = true;
             break;
         case 'ArrowLeft':
-        case 'a':
             keys.left = true;
             break;
         case 'ArrowRight':
-        case 'd':
             keys.right = true;
+            break;
+        case 'w':
+            keys.w = true;
+            break;
+        case 's':
+            keys.s = true;
+            break;
+        case 'a':
+            keys.a = true;
+            break;
+        case 'd':
+            keys.d = true;
             break;
     }
 });
@@ -63,20 +65,28 @@ window.addEventListener('keydown', (event) => {
 window.addEventListener('keyup', (event) => {
     switch (event.key) {
         case 'ArrowUp':
-        case 'w':
             keys.up = false;
             break;
         case 'ArrowDown':
-        case 's':
             keys.down = false;
             break;
         case 'ArrowLeft':
-        case 'a':
             keys.left = false;
             break;
         case 'ArrowRight':
-        case 'd':
             keys.right = false;
+            break;
+        case 'w':
+            keys.w = false;
+            break;
+        case 's':
+            keys.s = false;
+            break;
+        case 'a':
+            keys.a = false;
+            break;
+        case 'd':
+            keys.d = false;
             break;
     }
 });
@@ -92,17 +102,11 @@ function main() {
     const fov = 75;
     const aspect = 2; // the canvas default
     const near = 0.1;
-    const far = 5;
+    const far = 1000;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.z = 2;
 
     const scene = new THREE.Scene();
-
-    // const texture = cubeTextureLoader.load([
-    //     nx, ny,
-    //     nz, px,
-    //     py, pz,
-    // ]);
     const texture = cubeTextureLoader.load([
         px, // right
         nx, // left
@@ -113,74 +117,25 @@ function main() {
     ]);
     scene.background = texture;
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
-    const model = new THREE.Mesh(geometry, material);
-    scene.add(model);
-    // const cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
+    // Create a material for the ground. We'll use a basic material and set its color to white.
+    const groundMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-    // gltfLoader.load(
-    //     manGltf,
-    //     function (gltf) {
-    //         model = gltf.scene; // Save the loaded model.
-    //         scene.add(model);
-    //     },
-    //     undefined,
-    //     function (error) {
-    //         console.error(error);
-    //     }
-    // );
+    // Create a geometry for the ground. This will be a large plane.
+    // The first two parameters are the width and height of the plane.
+    const groundGeometry = new THREE.PlaneGeometry(200, 200);
 
-    // fileLoader.load(
-    //     manBin,
-    //     // onLoad callback
-    //     function (data) {
-    //         // output the text to the console
-    //         // console.log( data )
-    //     },
+    // Create a mesh from the geometry and material, and add it to the scene.
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 
-    //     // onProgress callback
-    //     function (xhr) {
-    //         console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-    //     },
+    // start the ground plane at a low point so it doesn't clip through the objects.
+    // we also don't want it at eye level with the camera.
+    ground.position.y = -50;
 
-    //     // onError callback
-    //     function (err) {
-    //         console.error('An error happened');
-    //     }
-    // );
+    // Rotate the ground plane so it's horizontal.
+    ground.rotation.x = -Math.PI / 2;
 
-    // imageLoader.load(
-    //     manJpg,
-    //     // onLoad callback
-    //     function (image) {
-    //         // use the image, e.g. draw part of it on a canvas
-    //         const canvas = document.createElement('canvas');
-    //         const context = canvas.getContext('2d');
-    //         context.drawImage(image, 100, 100);
-    //     },
-
-    //     // onProgress callback currently not supported
-    //     undefined,
-
-    //     // onError callback
-    //     function () {
-    //         console.error('An error happened.');
-    //     }
-    // );
-
-    // function render(time: number) {
-    //     time *= 0.001; // convert time to seconds
-
-    //     // cube.rotation.x = time;
-    //     // cube.rotation.y = time;
-
-    //     renderer.render(scene, camera);
-
-    //     requestAnimationFrame(render);
-    // }
-    // requestAnimationFrame(render);
+    // Add the ground to the scene.
+    scene.add(ground);
 
     function animate() {
         requestAnimationFrame(animate);
@@ -207,6 +162,28 @@ function main() {
         camera.position.set(x, y, z);
         // Make the camera point towards the object.
         camera.lookAt(objectPos);
+
+        // The speed at which the ground moves (but it looks like the camera is moving)
+        let moveSpeed = 2;
+
+        // Adjust the ground position based on the user's input (and the camera settings).
+        // Adjust the ground's position based on the user's input.
+        if (keys.w) {
+            ground.position.x += moveSpeed * Math.sin(phiRad);
+            ground.position.z += moveSpeed * Math.cos(phiRad);
+        }
+        if (keys.s) {
+            ground.position.x -= moveSpeed * Math.sin(phiRad);
+            ground.position.z -= moveSpeed * Math.cos(phiRad);
+        }
+        if (keys.a) {
+            ground.position.x += moveSpeed * Math.cos(phiRad);
+            ground.position.z -= moveSpeed * Math.sin(phiRad);
+        }
+        if (keys.d) {
+            ground.position.x -= moveSpeed * Math.cos(phiRad);
+            ground.position.z += moveSpeed * Math.sin(phiRad);
+        }
 
         renderer.render(scene, camera);
     }
