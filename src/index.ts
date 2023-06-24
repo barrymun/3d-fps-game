@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import nx from './assets/nx.jpg';
 import ny from './assets/ny.jpg';
@@ -118,7 +117,7 @@ function main() {
     scene.background = texture;
 
     // Create a material for the ground. We'll use a basic material and set its color to white.
-    const groundMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
 
     // Create a geometry for the ground. This will be a large plane.
     // The first two parameters are the width and height of the plane.
@@ -167,7 +166,6 @@ function main() {
         let moveSpeed = 2;
 
         // Adjust the ground position based on the user's input (and the camera settings).
-        // Adjust the ground's position based on the user's input.
         if (keys.w) {
             ground.position.x += moveSpeed * Math.sin(phiRad);
             ground.position.z += moveSpeed * Math.cos(phiRad);
