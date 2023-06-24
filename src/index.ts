@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 import nx from './assets/nx.jpg';
 import ny from './assets/ny.jpg';
@@ -6,8 +8,11 @@ import nz from './assets/nz.jpg';
 import px from './assets/px.jpg';
 import py from './assets/py.jpg';
 import pz from './assets/pz.jpg';
+import m4 from './assets/m4.glb';
 
 const cubeTextureLoader = new THREE.CubeTextureLoader();
+const gltfLoader = new GLTFLoader();
+
 const keys = {
     up: false,
     down: false,
@@ -117,38 +122,50 @@ function main() {
     // make sure to add the camera to the scene or the weapon won't be visible.
     scene.add(camera);
 
-    // Create a box geometry for the weapon.
-    const weaponGeometry = new THREE.BoxGeometry(2, 2, 1);
+    gltfLoader.load(
+        // resource
+        m4,
+        // called when the resource is loaded
+        function (gltf: {
+            scene: THREE.Object3D<THREE.Event>;
+            animations: any;
+            scenes: any;
+            cameras: any;
+            asset: any;
+        }) {
+            const object = gltf.scene;
 
-    // Create a basic material for the weapon and set its color to red.
-    const weaponMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            // object.scale.set(4, 4, 8);
+            object.scale.set(10, 10, 10);
 
-    // Create a mesh for the weapon and add it to the camera.
-    const weapon = new THREE.Mesh(weaponGeometry, weaponMaterial);
+            object.rotation.y = Math.PI / (6.5 / 8);
 
-    // Position the weapon in front of the camera.
-    weapon.position.set(2, -1, -2);
+            object.position.x = 3;
+            object.position.y = -0.5;
+            object.position.z = -2;
 
-    // Add the weapon to the camera.
-    camera.add(weapon);
+            camera.add(object);
+
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+        }
+    );
 
     // Create a material for the ground. We'll use a basic material and set its color to white.
     const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-
     // Create a geometry for the ground. This will be a large plane.
     // The first two parameters are the width and height of the plane.
     const groundGeometry = new THREE.PlaneGeometry(200, 200);
-
     // Create a mesh from the geometry and material, and add it to the scene.
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-
     // start the ground plane at a low point so it doesn't clip through the objects.
     // we also don't want it at eye level with the camera.
     ground.position.y = -50;
-
     // Rotate the ground plane so it's horizontal.
     ground.rotation.x = -Math.PI / 2;
-
     // Add the ground to the scene.
     scene.add(ground);
 

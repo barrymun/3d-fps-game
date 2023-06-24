@@ -29,6 +29,20 @@ module.exports = (env, argv) => {
                     ],
                 },
                 {
+                    test: /\.(glb)$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[name].[ext]',
+                                outputPath: 'assets/',
+                                publicPath: 'assets/',
+                                context: 'src/',
+                            },
+                        },
+                    ],
+                },
+                {
                     test: /\.bin$/,
                     use: {
                         loader: 'file-loader',
