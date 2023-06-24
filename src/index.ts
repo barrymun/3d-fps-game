@@ -99,8 +99,12 @@ function main() {
     const canvas = document.querySelector('#c') as HTMLCanvasElement;
     const renderer = new THREE.WebGLRenderer({
         canvas,
-        alpha: true,
+        // alpha: true,
+        antialias: true,
     });
+    // https://discourse.threejs.org/t/render-looks-blurry-and-pixelated-even-with-antialias-true-why/12381
+    renderer.setPixelRatio(window.devicePixelRatio);
+    // renderer.setSize( 1920, 1080 );
 
     const scene = new THREE.Scene();
     const texture = cubeTextureLoader.load([
@@ -113,14 +117,20 @@ function main() {
     ]);
     scene.background = texture;
 
+    const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
+    scene.add(ambientLight);
+
     const fov = 75;
     const aspect = 2; // the canvas default
     const near = 0.1;
     const far = 1000;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 2;
+    camera.position.z = 1000;
     // make sure to add the camera to the scene or the weapon won't be visible.
     scene.add(camera);
+
+    const pointLight = new THREE.PointLight(0xffffff, 0.8);
+    camera.add(pointLight);
 
     gltfLoader.load(
         // resource
@@ -135,14 +145,14 @@ function main() {
         }) {
             const object = gltf.scene;
 
-            // object.scale.set(4, 4, 8);
             object.scale.set(10, 10, 10);
 
-            object.rotation.y = Math.PI / (6.5 / 8);
+            object.rotation.x = Math.PI / (1.99 / 8);
+            object.rotation.y = Math.PI / (7.5 / 8);
 
             object.position.x = 3;
             object.position.y = -0.5;
-            object.position.z = -2;
+            object.position.z = -2.2;
 
             camera.add(object);
 
