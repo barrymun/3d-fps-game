@@ -8,7 +8,7 @@ import nz from './assets/nz.jpg';
 import px from './assets/px.jpg';
 import py from './assets/py.jpg';
 import pz from './assets/pz.jpg';
-import m4 from './assets/m4.glb';
+import m4 from './assets/low-poly/m4.glb';
 
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const gltfLoader = new GLTFLoader();
@@ -150,14 +150,13 @@ function main() {
                 c.castShadow = true;
             });
 
-            object.scale.set(10, 10, 10);
+            object.scale.set(2, 2, 2);
 
             object.rotation.x = Math.PI / (1.99 / 8);
-            object.rotation.y = Math.PI / (7.5 / 8);
 
-            object.position.x = 3;
-            object.position.y = -0.5;
-            object.position.z = -2.2;
+            object.position.x = 1;
+            object.position.y = -1.2;
+            object.position.z = -2.4;
 
             camera.add(object);
 
