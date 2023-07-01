@@ -37,6 +37,10 @@ let objectPos = new THREE.Vector3(0, 0, 0);
 // The speed at which the camera rotates in degrees (adjust as needed).
 let rotationSpeed = 1;
 
+let breathingSpeed = 0.02; // This will control how fast the bobbing effect happens
+let breathingAmount = 0.2; // This will control how much the camera bobs up and down
+let breathingProgress = 0.0; // This will keep track of the progress through the bobbing pattern
+
 window.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowUp':
@@ -183,6 +187,19 @@ function main() {
     // Add the ground to the scene.
     scene.add(ground);
 
+    function getPlayerBreathingCameraOffset(): number {
+        // Calculate bobbing offset based on sine wave
+        let verticalOffset = Math.sin(breathingProgress) * breathingAmount;
+
+        // Increment progress, reset to 0 if a full cycle has completed
+        breathingProgress += breathingSpeed;
+        if (breathingProgress > Math.PI * 2) {
+            breathingProgress = 0.0;
+        }
+
+        return verticalOffset;
+    }
+
     function animate() {
         requestAnimationFrame(animate);
 
@@ -205,7 +222,7 @@ function main() {
         let z = radius * Math.sin(thetaRad) * Math.cos(phiRad);
 
         // Update the camera's position.
-        camera.position.set(x, y, z);
+        camera.position.set(x, (y += getPlayerBreathingCameraOffset()), z);
         // Make the camera point towards the object.
         camera.lookAt(objectPos);
         // weapon.position.set(x, y, z-100);
