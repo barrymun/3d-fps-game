@@ -13,6 +13,8 @@ import m4 from './assets/low-poly/m4.glb';
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const gltfLoader = new GLTFLoader();
 
+let ground: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+
 const keys = {
     up: false,
     down: false,
@@ -23,6 +25,7 @@ const keys = {
     a: false,
     d: false,
 };
+const startingGroundYPosition: number = -30;
 
 // Initialize the camera's spherical coordinates.
 let radius = 10; // The distance from the object.
@@ -40,6 +43,10 @@ let rotationSpeed = 1;
 let breathingSpeed = 0.02; // This will control how fast the bobbing effect happens
 let breathingAmount = 0.2; // This will control how much the camera bobs up and down
 let breathingProgress = 0.0; // This will keep track of the progress through the bobbing pattern
+
+let movementSpeed = 0.04;
+let movementAmount = 0.3;
+let movementProgress = 0.0;
 
 window.addEventListener('keydown', (event) => {
     switch (event.key) {
@@ -86,9 +93,13 @@ window.addEventListener('keyup', (event) => {
             break;
         case 'w':
             keys.w = false;
+            movementProgress = 0.0;
+            returnToStartingGroundPosition();
             break;
         case 's':
             keys.s = false;
+            movementProgress = 0.0;
+            returnToStartingGroundPosition();
             break;
         case 'a':
             keys.a = false;
@@ -98,6 +109,18 @@ window.addEventListener('keyup', (event) => {
             break;
     }
 });
+
+function delay(time: number) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+async function returnToStartingGroundPosition() {
+    if (ground.position.y > startingGroundYPosition) {
+        ground.position.y -= 1.0;
+        await delay(10);
+        returnToStartingGroundPosition();
+    }
+}
 
 function main() {
     const canvas = document.querySelector('#c') as HTMLCanvasElement;
@@ -173,15 +196,16 @@ function main() {
     );
 
     // Create a material for the ground. We'll use a basic material and set its color to white.
-    const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const groundMaterial = new THREE.MeshBasicMaterial({ color: 0xffc0cb });
     // Create a geometry for the ground. This will be a large plane.
     // The first two parameters are the width and height of the plane.
     const groundGeometry = new THREE.PlaneGeometry(200, 200);
     // Create a mesh from the geometry and material, and add it to the scene.
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground = new THREE.Mesh(groundGeometry, groundMaterial);
     // start the ground plane at a low point so it doesn't clip through the objects.
     // we also don't want it at eye level with the camera.
-    ground.position.y = -50;
+    ground.position.y = startingGroundYPosition;
+    console.log(ground.position.y);
     // Rotate the ground plane so it's horizontal.
     ground.rotation.x = -Math.PI / 2;
     // Add the ground to the scene.
@@ -195,6 +219,20 @@ function main() {
         breathingProgress += breathingSpeed;
         if (breathingProgress > Math.PI * 2) {
             breathingProgress = 0.0;
+        }
+
+        return verticalOffset;
+    }
+
+    function getPlayerMovementGroundOffset(): number {
+        // Calculate bobbing offset based on sine wave
+        let verticalOffset = Math.sin(movementProgress) * movementAmount;
+        console.log(verticalOffset);
+
+        // Increment progress, reset to 0 if a full cycle has completed
+        movementProgress += movementSpeed;
+        if (movementProgress > Math.PI * 2) {
+            movementProgress = 0.0;
         }
 
         return verticalOffset;
@@ -221,11 +259,13 @@ function main() {
         let y = radius * Math.cos(thetaRad);
         let z = radius * Math.sin(thetaRad) * Math.cos(phiRad);
 
+        // account for player breathing
+        y += getPlayerBreathingCameraOffset();
+
         // Update the camera's position.
-        camera.position.set(x, (y += getPlayerBreathingCameraOffset()), z);
+        camera.position.set(x, y, z);
         // Make the camera point towards the object.
         camera.lookAt(objectPos);
-        // weapon.position.set(x, y, z-100);
 
         // The speed at which the ground moves (but it looks like the camera is moving)
         let moveSpeed = 2;
@@ -234,18 +274,22 @@ function main() {
         if (keys.w) {
             ground.position.x += moveSpeed * Math.sin(phiRad);
             ground.position.z += moveSpeed * Math.cos(phiRad);
+            ground.position.y += getPlayerMovementGroundOffset();
         }
         if (keys.s) {
             ground.position.x -= moveSpeed * Math.sin(phiRad);
             ground.position.z -= moveSpeed * Math.cos(phiRad);
+            ground.position.y += getPlayerMovementGroundOffset();
         }
         if (keys.a) {
             ground.position.x += moveSpeed * Math.cos(phiRad);
             ground.position.z -= moveSpeed * Math.sin(phiRad);
+            // ground.position.y += getPlayerMovementGroundOffset();
         }
         if (keys.d) {
             ground.position.x -= moveSpeed * Math.cos(phiRad);
             ground.position.z += moveSpeed * Math.sin(phiRad);
+            // sground.position.y += getPlayerMovementGroundOffset();
         }
 
         renderer.render(scene, camera);
