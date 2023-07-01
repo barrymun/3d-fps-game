@@ -6,7 +6,15 @@ module.exports = (env, argv) => {
     return {
         mode: argv.mode === 'development' ? 'development' : 'production',
         devtool: argv.mode === 'development' ? 'cheap-module-source-map' : 'source-map',
-        entry: './src/index.ts',
+        entry: {
+            main: [
+                './src/index.ts',
+                './src/utils.ts',
+                './src/game-controller.ts',
+                './src/weapon-controller.ts',
+                './src/movement-controller.ts',
+            ],
+        },
         module: {
             rules: [
                 {
@@ -69,7 +77,7 @@ module.exports = (env, argv) => {
             ],
         },
         resolve: {
-            extensions: ['.tsx', '.ts', '.js'],
+            extensions: ['.ts', '.js'],
         },
         output: {
             filename: 'bundle.js',
