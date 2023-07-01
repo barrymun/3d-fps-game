@@ -274,22 +274,22 @@ function main() {
         if (keys.w) {
             ground.position.x += moveSpeed * Math.sin(phiRad);
             ground.position.z += moveSpeed * Math.cos(phiRad);
-            ground.position.y += getPlayerMovementGroundOffset();
         }
         if (keys.s) {
             ground.position.x -= moveSpeed * Math.sin(phiRad);
             ground.position.z -= moveSpeed * Math.cos(phiRad);
-            ground.position.y += getPlayerMovementGroundOffset();
         }
         if (keys.a) {
             ground.position.x += moveSpeed * Math.cos(phiRad);
             ground.position.z -= moveSpeed * Math.sin(phiRad);
-            // ground.position.y += getPlayerMovementGroundOffset();
         }
         if (keys.d) {
             ground.position.x -= moveSpeed * Math.cos(phiRad);
             ground.position.z += moveSpeed * Math.sin(phiRad);
-            // sground.position.y += getPlayerMovementGroundOffset();
+        }
+
+        if (keys.w || keys.s) {
+            ground.position.y += getPlayerMovementGroundOffset();
         }
 
         renderer.render(scene, camera);
