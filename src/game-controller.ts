@@ -9,9 +9,9 @@ import pz from './assets/pz.jpg';
 import { delay } from './utils';
 import { MovementController } from './movement-controller';
 import { WeaponController } from './weapon-controller';
+import { startingGroundYPosition } from './constants';
 
 const cubeTextureLoader = new THREE.CubeTextureLoader();
-const startingGroundYPosition: number = -30;
 
 export class GameController {
     _renderer: THREE.WebGLRenderer | undefined;

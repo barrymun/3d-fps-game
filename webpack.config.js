@@ -13,6 +13,7 @@ module.exports = (env, argv) => {
                 './src/game-controller.ts',
                 './src/weapon-controller.ts',
                 './src/movement-controller.ts',
+                './src/constants.ts',
             ],
         },
         module: {

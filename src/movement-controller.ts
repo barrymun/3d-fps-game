@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { GameController } from './game-controller';
+import { startingGroundYPosition } from './constants';
 
 const breathingSpeed: number = 0.02;
 const breathingAmount: number = 0.2;
@@ -36,6 +37,15 @@ export class MovementController {
     };
     _breathingProgress: number = 0.0;
     _movementProgress: number = 0.0; // This will keep track of the progress through the bobbing pattern
+    // jump related variables
+    _jumpHeight: number = 30.0;
+    _isJumping: boolean = false;
+    _reachedJumpPeak: boolean = false;
+    // TODO: introduce the notion of gravity and jump speed in a future iteration
+    _gravity: number = -0.5;
+    _jumpSpeed: number = 1.0;
+    _startJumpPosition: number | undefined;
+    _startJumpTime: number | undefined;
 
     getGameController = () => {
         return this._gameController!;
@@ -107,6 +117,9 @@ export class MovementController {
             case 'd':
                 this.getKeys().d = true;
                 break;
+            case ' ':
+                this.jump();
+                break;
         }
     };
 
@@ -143,9 +156,12 @@ export class MovementController {
         }
     };
 
-    public start = () => {
-        requestAnimationFrame(this.start);
+    private jump = () => {
+        if (this._isJumping) return;
+        this._isJumping = true;
+    };
 
+    public start = () => {
         // Adjust the camera's spherical coordinates based on the user's input.
         if (this.getKeys().up) theta += rotationSpeed;
         if (this.getKeys().down) theta -= rotationSpeed;
@@ -175,7 +191,9 @@ export class MovementController {
         // The speed at which the ground moves (but it looks like the camera is moving)
         let moveSpeed = 2;
 
-        // Adjust the ground position based on the user's input (and the camera settings).
+        // Adjust the ground position based on the user's input (and the camera settings)
+        // TODO: this is a bit of a hack, but it works for now. We should probably use a raycaster to determine the ground position.
+        // TODO: player should not be able to move left or right while jumping
         if (this.getKeys().w) {
             this.getGameController().getGround().position.x += moveSpeed * Math.sin(phiRad);
             this.getGameController().getGround().position.z += moveSpeed * Math.cos(phiRad);
@@ -193,13 +211,39 @@ export class MovementController {
             this.getGameController().getGround().position.z += moveSpeed * Math.sin(phiRad);
         }
 
-        if (this.getKeys().w || this.getKeys().s) {
-            this.getGameController().getGround().position.y += this.getPlayerMovementGroundOffset();
+        // account for up and down motion simulation when moving forward or backward, but only while not jumping
+        if (!this._isJumping && (this.getKeys().w || this.getKeys().s)) {
+            // don't move the player up and down if forward and backward movement is occuring simultaneously
+            if (!(this.getKeys().w && this.getKeys().s)) {
+                this.getGameController().getGround().position.y += this.getPlayerMovementGroundOffset();
+            }
+        }
+
+        if (this._isJumping) {
+            const maxJumpHeight: number = startingGroundYPosition - this._jumpHeight;
+            const yPos: number = this.getGameController().getGround().position.y;
+
+            if (!this._reachedJumpPeak) {
+                if (yPos > maxJumpHeight) {
+                    this.getGameController().getGround().position.y -= 1.0;
+                } else {
+                    this._reachedJumpPeak = true;
+                }
+            } else {
+                if (yPos < startingGroundYPosition) {
+                    this.getGameController().getGround().position.y += 1.0;
+                } else {
+                    this._isJumping = false;
+                    this._reachedJumpPeak = false;
+                }
+            }
         }
 
         this.getGameController()
             .getRenderer()
             .render(this.getGameController().getScene(), this.getGameController().getCamera());
+
+        requestAnimationFrame(this.start);
     };
 
     private bindListeners = () => {
