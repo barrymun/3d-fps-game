@@ -10,6 +10,7 @@ const domContentLoadedListener = (_event: Event) => {
 const unloadListener = (_event: Event) => {
     console.log('unload');
     window.removeEventListener('DOMContentLoaded', domContentLoadedListener);
+    window.removeEventListener('unload', unloadListener);
 };
 
 window.addEventListener('DOMContentLoaded', domContentLoadedListener);

@@ -60,6 +60,7 @@ export class GameController {
         this.loadScene();
         this.loadCamera();
         this.loadGround();
+        this.bindListeners();
     }
 
     private loadRenderer = () => {
@@ -71,7 +72,7 @@ export class GameController {
         });
         // https://discourse.threejs.org/t/render-looks-blurry-and-pixelated-even-with-antialias-true-why/12381
         renderer.setPixelRatio(window.devicePixelRatio);
-        // renderer.setSize(1920, 1080);
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
         this.setRenderer(renderer);
     };
@@ -97,11 +98,12 @@ export class GameController {
 
     private loadCamera = () => {
         const fov = 75;
-        const aspect = 2; // the canvas default
+        const aspect = window.innerWidth / window.innerHeight; // the canvas default
         const near = 0.1;
         const far = 1000;
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         camera.position.z = 1000;
+
         // make sure to add the camera to the scene or the weapon won't be visible.
         this.getScene().add(camera);
 
@@ -109,6 +111,8 @@ export class GameController {
 
         const pointLight = new THREE.PointLight(0xffffff, 0.8);
         this.getCamera().add(pointLight);
+
+        this.getCamera().updateProjectionMatrix();
     };
 
     private loadGround = () => {
@@ -143,5 +147,21 @@ export class GameController {
         const _wc = new WeaponController(this);
         _wc.loadM4();
         _mc.start();
+    };
+
+    private handleResize = () => {
+        this.getCamera().aspect = window.innerWidth / window.innerHeight;
+        this.getCamera().updateProjectionMatrix();
+        this.getRenderer().setSize(window.innerWidth, window.innerHeight);
+    };
+
+    private bindListeners = () => {
+        window.addEventListener('resize', this.handleResize);
+        window.addEventListener('unload', this.releaseListeners);
+    };
+
+    private releaseListeners = () => {
+        window.removeEventListener('resize', this.handleResize);
+        window.removeEventListener('unload', this.releaseListeners);
     };
 }

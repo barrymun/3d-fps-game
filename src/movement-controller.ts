@@ -211,5 +211,6 @@ export class MovementController {
     private releaseListeners = () => {
         window.removeEventListener('keydown', this.handleMovementStart);
         window.removeEventListener('keyup', this.handleMovementEnd);
+        window.removeEventListener('unload', this.releaseListeners);
     };
 }
