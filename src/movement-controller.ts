@@ -215,7 +215,8 @@ export class MovementController {
         if (!this._isJumping && (this.getKeys().w || this.getKeys().s)) {
             // don't move the player up and down if forward and backward movement is occuring simultaneously
             if (!(this.getKeys().w && this.getKeys().s)) {
-                this.getGameController().getGround().position.y += this.getPlayerMovementGroundOffset();
+                // TODO: find a better way to do this - can lead to some weird behavior when jumping
+                // this.getGameController().getGround().position.y += this.getPlayerMovementGroundOffset();
             }
         }
 
