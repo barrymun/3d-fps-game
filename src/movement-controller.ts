@@ -91,7 +91,7 @@ export class MovementController {
         return verticalOffset;
     };
 
-    private handleMovementStart = (event: KeyboardEvent) => {
+    private handleKeyDown = (event: KeyboardEvent) => {
         switch (event.key) {
             case 'ArrowUp':
                 this.getKeys().up = true;
@@ -123,7 +123,7 @@ export class MovementController {
         }
     };
 
-    private handleMovementEnd = (event: KeyboardEvent) => {
+    private handleKeyUp = (event: KeyboardEvent) => {
         switch (event.key) {
             case 'ArrowUp':
                 this.getKeys().up = false;
@@ -248,14 +248,14 @@ export class MovementController {
     };
 
     private bindListeners = () => {
-        window.addEventListener('keydown', this.handleMovementStart);
-        window.addEventListener('keyup', this.handleMovementEnd);
+        window.addEventListener('keydown', this.handleKeyDown);
+        window.addEventListener('keyup', this.handleKeyUp);
         window.addEventListener('unload', this.releaseListeners);
     };
 
     private releaseListeners = () => {
-        window.removeEventListener('keydown', this.handleMovementStart);
-        window.removeEventListener('keyup', this.handleMovementEnd);
+        window.removeEventListener('keydown', this.handleKeyDown);
+        window.removeEventListener('keyup', this.handleKeyUp);
         window.removeEventListener('unload', this.releaseListeners);
     };
 }

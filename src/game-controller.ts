@@ -102,7 +102,6 @@ export class GameController {
         const near = 0.1;
         const far = 1000;
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        camera.position.z = 1000;
 
         // make sure to add the camera to the scene or the weapon won't be visible.
         this.getScene().add(camera);
