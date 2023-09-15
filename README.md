@@ -1,4 +1,5 @@
 # 3D FPS Game with Three.js and TypeScript
+
 **🚧 Work in Progress 🚧**
 
 ![Status](https://img.shields.io/badge/status-work_in_progress-yellow)
@@ -40,6 +41,7 @@ yarn run serve
 
 - **Move**: Use the "W", "A", "S", "D" keys.
 - **Camera Control**: Use the arrow keys.
+- **Jump**: Use the "Space" key.
 
 ## Upcoming Features
 
